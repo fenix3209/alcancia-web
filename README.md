@@ -1,4 +1,6 @@
-# Alcancía para iPhone
+# Cerdito Cadejo para iPhone
+
+*Gastos personales y ahorros.* En la pantalla de inicio aparece como **Mis gastos**.
 
 Tus finanzas personales con los cerditos Cadejo. Funciona sin internet y **todo se guarda solo en tu teléfono**: esta página no tiene servidor ni recibe tus datos.
 

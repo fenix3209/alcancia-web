@@ -1,5 +1,5 @@
 /* Alcancía: funciona sin internet. Este archivo lo genera tools/build-web.py. */
-const CACHE = "alcancia-2dfb9632de";
+const CACHE = "alcancia-d9ce4db2bf";
 const FILES = [
   "./",
   "index.html",

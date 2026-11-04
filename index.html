@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#1F5C47">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Alcancía">
+<meta name="apple-mobile-web-app-title" content="Mis gastos">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>Alcancía</title>
+<title>Cerdito Cadejo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231F5C47'/%3E%3Ccircle cx='32' cy='36' r='16' fill='%23E2B04A'/%3E%3Crect x='24' y='12' width='16' height='5' rx='2.5' fill='%23F4E7C8'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
@@ -321,12 +321,13 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
 .onb p{color:var(--muted);margin:0 0 22px}
 .view[hidden],[hidden]{display:none!important}
 .small{font-size:.8rem;color:var(--muted)}
+.onb-tag{margin:-4px 0 10px;font-weight:700;color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <h1 class="hello" id="hello">Hola<small>Tu alcancía</small></h1>
+    <h1 class="hello" id="hello">Hola<small>Cerdito Cadejo</small></h1>
     <div class="top-r">
       <div class="sync" id="sync"><span class="dot" id="syncDot"></span><span id="syncTxt">Cargando…</span></div>
       <button class="theme-btn" type="button" id="themeBtn" aria-label="Cambiar a modo nocturno"></button>
@@ -595,7 +596,8 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
 <div class="onb" id="onb" role="dialog" aria-modal="true" aria-labelledby="onbTitle">
   <form class="in" id="onbForm" novalidate>
     <div class="logo"><svg width="38" height="38" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#E2B04A"/><rect x="22" y="8" width="20" height="6" rx="3" fill="#F4E7C8"/><path d="M32 27v18M27 31h7a3.5 3.5 0 0 1 0 7h-4a3.5 3.5 0 0 0 0 7h7" stroke="#1F5C47" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
-    <h1 id="onbTitle">Alcancía</h1>
+    <h1 id="onbTitle">Cerdito Cadejo</h1>
+    <p class="onb-tag">Gastos personales y ahorros</p>
     <p>Anota lo que entra y lo que sale, ponle tope a tus gastos y mira crecer tu ahorro.</p>
     <div class="field"><label for="oName">¿Cómo te llamas?</label><input id="oName" type="text" autocomplete="given-name" placeholder="Tu nombre" required></div>
     <div class="grid2">
@@ -1078,7 +1080,7 @@ function mvRow(x,withDel){
 }
 function render(){
   const name=S.profile?.name||"";
-  $("hello").innerHTML=`${name?"Hola, "+esc(name):"Hola"}<small>Tu alcancía</small>`;
+  $("hello").innerHTML=`${name?"Hola, "+esc(name):"Hola"}<small>Cerdito Cadejo</small>`;
   $("monthLbl").textContent=MONTHS[ym.m]+" "+ym.y;
   const list=monthMovs(), t=totals(list);
   // Inicio
@@ -1291,7 +1293,7 @@ $("copyBk").addEventListener("click",async()=>{
   catch(e){$("importBox").hidden=false;$("importTxt").value=txt;$("importTxt").select();toast("Selecciona el texto y cópialo");}
 });
 $("showImport").addEventListener("click",()=>{$("importBox").hidden=!$("importBox").hidden;$("importTxt").value="";});
-function doImport(txt){try{if(!txt||txt.length>5e6)throw 0;const p=JSON.parse(txt);if(!p||!Array.isArray(p.movs))throw 0;S=normalize(p);commit();applyTheme();toast("Respaldo restaurado");checkOnboarding();return true;}catch(e){toast("Ese texto no es un respaldo válido de Alcancía");return false;}}
+function doImport(txt){try{if(!txt||txt.length>5e6)throw 0;const p=JSON.parse(txt);if(!p||!Array.isArray(p.movs))throw 0;S=normalize(p);commit();applyTheme();toast("Respaldo restaurado");checkOnboarding();return true;}catch(e){toast("Ese texto no es un respaldo válido de Cerdito Cadejo");return false;}}
 $("doImport").addEventListener("click",()=>{if(doImport($("importTxt").value))$("importBox").hidden=true;});
 $("onbRestore").addEventListener("click",()=>{$("onbImport").hidden=!$("onbImport").hidden;});
 $("onbDoImport").addEventListener("click",()=>doImport($("onbImportTxt").value));
@@ -1760,7 +1762,7 @@ setTimeout(()=>{checkSad(false);checkOnOpen();scheduleNotifs();},600);
 setSync("","Conectando…");
 connectRemote();
 /* ===== Versión web para iPhone (tools/ios.js) ===== */
-/* Alcancía para iPhone: lo que en Android hace la app nativa.
+/* Cerdito Cadejo (Mis gastos) para iPhone: lo que en Android hace la app nativa.
    - Bloqueo con PIN (en vez de huella)
    - Respaldo para compartir o guardar como archivo
    - Sonido de los cerditos en Safari
@@ -1810,7 +1812,7 @@ lock.setAttribute("aria-modal", "true");
 lock.setAttribute("aria-labelledby", "pinTitle");
 lock.innerHTML = `
   <img src="icons/icon-192.png" alt="" width="72" height="72" style="border-radius:18px">
-  <h1 id="pinTitle">Alcancía</h1>
+  <h1 id="pinTitle">Cerdito Cadejo</h1>
   <p id="pinMsg" aria-live="polite">Escribe tu PIN</p>
   <div class="dots" id="pinDots" aria-hidden="true"></div>
   <div class="pad" id="pinPad">
@@ -1983,7 +1985,7 @@ if(copyBk){
   fresh.addEventListener("click", async () => {
     const txt = backupText();
     if(navigator.share){
-      try{ await navigator.share({title:"Respaldo de Alcancía", text:txt}); return; }
+      try{ await navigator.share({title:"Respaldo de Cerdito Cadejo", text:txt}); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     try{ await navigator.clipboard.writeText(txt); toast("Respaldo copiado. Pégalo en una nota."); }
@@ -1998,10 +2000,10 @@ if(copyBk){
   const p = fresh.closest(".card").querySelector(".sub");
   if(p) p.textContent = "Tus datos solo están en este teléfono. Guarda un respaldo cada cierto tiempo (por ejemplo en Archivos o iCloud Drive) y antes de cambiar de teléfono.";
   document.getElementById("saveBkFile").addEventListener("click", async () => {
-    const d = new Date(), name = `alcancia-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
+    const d = new Date(), name = `cerdito-cadejo-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
     const file = new File([backupText()], name, {type:"application/json"});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:"Respaldo de Alcancía"}); return; }
+      try{ await navigator.share({files:[file], title:"Respaldo de Cerdito Cadejo"}); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name;

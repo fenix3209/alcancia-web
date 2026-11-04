@@ -1,4 +1,4 @@
-/* Alcancía para iPhone: lo que en Android hace la app nativa.
+/* Cerdito Cadejo (Mis gastos) para iPhone: lo que en Android hace la app nativa.
    - Bloqueo con PIN (en vez de huella)
    - Respaldo para compartir o guardar como archivo
    - Sonido de los cerditos en Safari
@@ -48,7 +48,7 @@ lock.setAttribute("aria-modal", "true");
 lock.setAttribute("aria-labelledby", "pinTitle");
 lock.innerHTML = `
   <img src="icons/icon-192.png" alt="" width="72" height="72" style="border-radius:18px">
-  <h1 id="pinTitle">Alcancía</h1>
+  <h1 id="pinTitle">Cerdito Cadejo</h1>
   <p id="pinMsg" aria-live="polite">Escribe tu PIN</p>
   <div class="dots" id="pinDots" aria-hidden="true"></div>
   <div class="pad" id="pinPad">
@@ -221,7 +221,7 @@ if(copyBk){
   fresh.addEventListener("click", async () => {
     const txt = backupText();
     if(navigator.share){
-      try{ await navigator.share({title:"Respaldo de Alcancía", text:txt}); return; }
+      try{ await navigator.share({title:"Respaldo de Cerdito Cadejo", text:txt}); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     try{ await navigator.clipboard.writeText(txt); toast("Respaldo copiado. Pégalo en una nota."); }
@@ -236,10 +236,10 @@ if(copyBk){
   const p = fresh.closest(".card").querySelector(".sub");
   if(p) p.textContent = "Tus datos solo están en este teléfono. Guarda un respaldo cada cierto tiempo (por ejemplo en Archivos o iCloud Drive) y antes de cambiar de teléfono.";
   document.getElementById("saveBkFile").addEventListener("click", async () => {
-    const d = new Date(), name = `alcancia-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
+    const d = new Date(), name = `cerdito-cadejo-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
     const file = new File([backupText()], name, {type:"application/json"});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:"Respaldo de Alcancía"}); return; }
+      try{ await navigator.share({files:[file], title:"Respaldo de Cerdito Cadejo"}); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera la versión web (iPhone) de Alcancía a partir del index.html de Android.
+"""Genera la versión web (iPhone) de Cerdito Cadejo (Mis gastos) a partir del index.html de Android.
 
 Uso:
   python3 tools/build-web.py RUTA/AL/app/src/main/assets/index.html [RUTA/ICONO.png]
@@ -32,8 +32,8 @@ html = sub(r'<link rel="preconnect" href="https://fonts\.googleapis\.com">\s*'
            '<link rel="stylesheet" href="fonts/fonts.css">', html)
 
 # 2. Instalación en iPhone: manifest, ícono, barra de estado.
-html = sub(r'<meta name="apple-mobile-web-app-title" content="Alcancía">',
-           '<meta name="apple-mobile-web-app-title" content="Alcancía">\n'
+html = sub(r'(<meta name="apple-mobile-web-app-title" content="[^"]*">)',
+           r'\1\n'
            '<meta name="apple-mobile-web-app-status-bar-style" content="default">\n'
            '<meta name="format-detection" content="telephone=no">\n'
            '<link rel="manifest" href="manifest.webmanifest">\n'
