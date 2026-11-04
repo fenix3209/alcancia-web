@@ -219,13 +219,14 @@ if(copyBk){
   copyBk.replaceWith(fresh);
   fresh.textContent = "Compartir respaldo";
   fresh.addEventListener("click", async () => {
-    const txt = backupText();
+    const r = await exportBackup(); if(!r) return;
+    const txt = r.txt;
     if(navigator.share){
-      try{ await navigator.share({title:"Respaldo de Cerdito Cadejo", text:txt}); return; }
+      try{ await navigator.share({title:"Respaldo de Cerdito Cadejo", text:txt}); markBackup(); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
-    try{ await navigator.clipboard.writeText(txt); toast("Respaldo copiado. Pégalo en una nota."); }
-    catch(e){ $("importBox").hidden = false; $("importTxt").value = txt; $("importTxt").select(); toast("Selecciona el texto y cópialo"); }
+    try{ await navigator.clipboard.writeText(txt); markBackup(); toast(r.enc ? "Respaldo cifrado copiado. Pégalo en una nota." : "Respaldo copiado (sin contraseña). Pégalo en una nota."); }
+    catch(e){ $("importBox").hidden = false; $("importTxt").value = txt; $("importTxt").select(); markBackup(); toast("Selecciona el texto y cópialo"); }
   });
   const row = document.createElement("div");
   row.className = "grid2"; row.style.marginTop = "10px";
@@ -234,17 +235,18 @@ if(copyBk){
                 + '<input type="file" id="bkFileIn" accept=".json,.txt,application/json,text/plain" hidden>';
   fresh.parentElement.after(row);
   const p = fresh.closest(".card").querySelector(".sub");
-  if(p) p.textContent = "Tus datos solo están en este teléfono. Guarda un respaldo cada cierto tiempo (por ejemplo en Archivos o iCloud Drive) y antes de cambiar de teléfono.";
+  if(p) p.textContent = "Tus datos solo están en este teléfono. Guarda un respaldo cada mes (por ejemplo en Archivos o iCloud Drive) y antes de cambiar de teléfono.";
   document.getElementById("saveBkFile").addEventListener("click", async () => {
     const d = new Date(), name = `cerdito-cadejo-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
-    const file = new File([backupText()], name, {type:"application/json"});
+    const r = await exportBackup(); if(!r) return;
+    const file = new File([r.txt], name, {type:"application/json"});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:"Respaldo de Cerdito Cadejo"}); return; }
+      try{ await navigator.share({files:[file], title:"Respaldo de Cerdito Cadejo"}); markBackup(); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    toast("Respaldo guardado");
+    markBackup(); toast(r.enc ? "Respaldo cifrado guardado" : "Respaldo guardado (sin contraseña)");
   });
   const fileIn = document.getElementById("bkFileIn");
   document.getElementById("loadBkFile").addEventListener("click", () => fileIn.click());
@@ -252,7 +254,7 @@ if(copyBk){
     const f = fileIn.files && fileIn.files[0]; fileIn.value = "";
     if(!f) return;
     if(f.size > 5e6){ toast("Ese archivo es demasiado grande"); return; }
-    doImport(await f.text());
+    doImport(await f.text(), $("bkPass").value);
   });
 }
 
