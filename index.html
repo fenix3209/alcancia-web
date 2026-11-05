@@ -351,6 +351,15 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
 .snap span{font-size:.8rem;color:var(--muted)}
 .snap button{flex:none;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 12px;font:600 .8rem var(--font-body);cursor:pointer}
 .snap button.arm{background:var(--bad);border-color:var(--bad);color:#fff}
+.cap-sum{background:var(--bg);border-radius:14px;padding:12px 14px;margin:4px 0 14px}
+.cap-sum .ins-row{padding:5px 0}
+.cap-sum .ins-row.tot{border-top:1px solid var(--line);margin-top:2px;padding-top:8px}
+.cap-bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+.cap-bar i{display:block;height:100%;border-radius:99px;background:var(--good)}
+.cap-bar i.over{background:var(--bad)}
+.cap-msg{font-size:.85rem;font-weight:600;margin:0}
+.cat-row input.num.limit{border-color:var(--bad);animation:pinShake .35s}
+@keyframes pinShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 .bk-state{font-size:.88rem;font-weight:600;margin:0 0 6px;color:var(--good)}
 .bk-state.old{color:var(--warn)}
 .sub-row select{grid-column:2/5;padding:7px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:.82rem;min-width:0;color:var(--ink)}
@@ -397,7 +406,12 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
         <p class="sub" id="fixTxt"></p>
         <button class="btn block" type="button" id="fixGo">Registrarlos ahora</button>
       </div>
-            <div class="card" id="antCard">
+            <div class="card" id="cycleCard">
+        <h2>Quincena y tarjeta</h2>
+        <div id="qBlock"></div>
+        <div id="cBlock"></div>
+      </div>
+      <div class="card" id="antCard">
         <div class="card-head"><h2>Gastos hormiga 🐜</h2><button class="link" type="button" id="antSee">Ver cuáles</button></div>
         <div id="antBody"></div>
       </div>
@@ -522,7 +536,7 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
     </div>
     <div class="card">
       <h2>Tarjeta de crédito</h2>
-        <p class="sub">El Cadejo cobrador te avisa 3 días antes del pago y, con el día de corte, te dice cuánto gastaste en el ciclo.</p>
+        <p class="sub">Con el día de corte ves en Inicio cuánto llevas en el ciclo. El Cadejo cobrador te avisa 3 días antes del pago.</p>
         <div class="grid2">
           <div class="field" style="margin:0"><label for="sCutDay">Día de corte</label><input id="sCutDay" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Ej. 15"></div>
           <div class="field" style="margin:0"><label for="sPayDay">Día de pago</label><input id="sPayDay" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Ej. 5"></div>
@@ -548,12 +562,17 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
         <div class="field"><label for="sYear">Meta de ahorro total</label><input id="sYear" type="number" inputmode="decimal" step="1"></div>
       </div>
 
-      <div class="field"><label for="sEF">Fondo de emergencia deseado</label><input id="sEF" type="number" inputmode="decimal" step="1"></div>
+              <div class="grid2">
+          <div class="field"><label for="sQ1">Cobras el día</label><input id="sQ1" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="15"></div>
+          <div class="field"><label for="sQ2">y el día</label><input id="sQ2" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Último del mes"></div>
+        </div>
+        <div class="field"><label for="sEF">Fondo de emergencia deseado</label><input id="sEF" type="number" inputmode="decimal" step="1"></div>
       <button class="btn block" type="button" id="saveProfile">Guardar datos</button>
     </div>
     <div class="card" id="catCard">
       <h2>Categorías y topes</h2>
       <p class="sub">Cambia el nombre o el tope mensual, agrega o borra categorías, y elige qué cerdito sale <b>al gastar</b> y <b>al pasar el tope</b>. Toca ▶ para verlo. Tope en 0 = sin límite.</p>
+      <div id="capSum"></div>
       <div class="cat-cols"><span style="width:10px"></span><span>Nombre</span><span style="text-align:right">Tope $</span><span style="width:42px"></span></div>
       <div id="catEdit"></div>
       <button class="btn ghost block" type="button" id="recCats" style="margin-top:10px">Usar la recomendación de cerditos</button>
@@ -575,7 +594,7 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
     </div>
     <div class="card" id="snapCard">
         <h2>Copias guardadas en la app</h2>
-        <p class="sub">La app guarda sola una copia de tus datos cada día que la usas, y siempre antes de restaurar un respaldo. Conserva las últimas 10. Si algo sale mal, vuelve a una de ellas con un toque.</p>
+        <p class="sub">La app guarda sola una copia de tus datos cada día que la usas, y siempre antes de restaurar un respaldo. Conserva las de la última semana (7). Si algo sale mal, vuelve a una de ellas con un toque.</p>
         <div id="snapList"></div>
         <button class="btn ghost block" type="button" id="snapNow" style="margin-top:10px">Guardar una copia ahora</button>
         <p class="mini-note">Estas copias viven dentro de la app: si la desinstalas o pierdes el teléfono, se pierden con ella. Para eso está el respaldo de abajo.</p>
@@ -1180,7 +1199,7 @@ function renderInsights(list){
   const pend=isCur&&!poliSeen("fx|fixhide|"+ymKey(ym.y,ym.m))?pendingFixed(ym.y,ym.m):[];
   $("fixCard").hidden=!pend.length;
   if(pend.length){const tot=pend.reduce((a,s)=>a+s.amt,0);$("fixTxt").textContent=`Tienes ${pend.length} sin anotar este mes (${fmt(tot)}): ${pend.slice(0,4).map(s=>s.name).join(", ")}${pend.length>4?"…":""}.`;}
-  // Quincena y tarjeta: la tarjeta se quitó de Inicio en la v2.5 (se deja el cálculo por si se vuelve a usar)
+  // Quincena y tarjeta (solo información, siempre con la fecha de hoy)
   if($("cycleCard")){const q=quincenaInfo(today), caps=S.cats.reduce((a,c)=>a+(+c.cap||0),0), half=caps/2, rest=half-q.spent;
   let qh=`<p class="ins-h">Esta quincena</p>
     <div class="ins-row"><span>Gastado desde el ${dLabel(q.last)}</span><b class="num">${fmt(q.spent)}</b></div>
@@ -1193,7 +1212,7 @@ function renderInsights(list){
     <div class="ins-row"><span>Llevas desde el corte (${dLabel(c.lastCut)})</span><b class="num">${fmt(c.cur)}</b></div>
     <div class="ins-row"><span>Próximo corte</span><b>${dLabel(c.nextCut)} · ${daysBetween(today,c.nextCut)===1?"mañana":"en "+daysBetween(today,c.nextCut)+" días"}</b></div>
     <div class="ins-row"><span>Ciclo cerrado, a pagar${S.payDay?" antes del "+dLabel(nextPayDate(today)||c.nextCut):""}</span><b class="num">${fmt(c.closed)}</b></div>`;}
-  else $("cBlock").innerHTML="";}
+  else $("cBlock").innerHTML=S.movs.some(x=>x.method==="tarjeta")?`<p class="ins-h">Tarjeta de crédito</p><p class="mini-note">Con el día de corte de tu tarjeta (en Ajustes) aquí verías cuánto llevas en el ciclo.</p>`:"";}
   // Gastos hormiga del mes que estás viendo
   const ants=list.filter(isAnt), sum=ants.reduce((a,x)=>a+x.amt,0);
   if(!ants.length){$("antBody").innerHTML=`<p class="empty" style="padding:0">Ningún gasto de ${fmt0(HORMIGA)} o menos este mes. ¡Bien!</p>`;$("antSee").hidden=true;}
@@ -1321,6 +1340,7 @@ function renderExtras(){
   $("extras").innerHTML=ex.map(e=>{const a=+e.amt||0,p=+e.pct||0;return `<div class="extra"><div class="eh"><b>${esc(e.name)}</b><span class="when">${esc(monthLabel(e.month))}</span></div>${e.note?`<p>${esc(e.note)}</p>`:""}<div class="nums num"><span>Esperado: <b>${a?fmt0(a):"—"}</b></span><span>Ahorrar ${p}%: <b style="color:var(--coin)">${a?fmt0(a*p/100):"—"}</b></span></div><div class="acts"><button class="link" type="button" data-exedit="${esc(e.id)}">Editar</button><button class="link" type="button" style="color:var(--bad)" data-exdel="${esc(e.id)}">Borrar</button></div></div>`;}).join("")||'<p class="empty">No tienes ingresos extra anotados. Toca “+ Agregar”.</p>';
 }
 function renderSettings(){
+  setTimeout(renderCapSum,0);
   renderSnaps();
   if(document.activeElement?.closest?.("#v-ajustes"))return;
   const p=S.profile||{};
@@ -1329,7 +1349,7 @@ function renderSettings(){
   renderSubs();
   $("fxSw").checked=S.fx!==false;$("musicSw").checked=S.music!==false;$("warnSw").checked=S.warn80!==false;$("dndSw").checked=!!S.dnd;
   ["nPay","nIdle","nMonth"].forEach(k=>$(k+"Sw").checked=S[k]!==false);
-  $("sPayDay").value=S.payDay||"";$("sCutDay").value=S.cutDay||"";$("bkRemSw").checked=S.bkRem!==false;
+  $("sPayDay").value=S.payDay||"";$("sCutDay").value=S.cutDay||"";$("sQ1").value=S.q1||15;$("sQ2").value=S.q2||"";$("bkRemSw").checked=S.bkRem!==false;
   if(isAndroid&&AndroidBridge.schedule){$("phoneSec").hidden=false;$("notifSw").checked=S.notif!==false;$("nSubs").classList.toggle("off",S.notif===false);}
   if(isAndroid&&AndroidBridge.isLockEnabled){$("secCard").hidden=false;try{$("lockSw").checked=!!AndroidBridge.isLockEnabled();}catch(e){}}
 }
@@ -1338,6 +1358,22 @@ function renderCatEdit(cats){
   $("catEdit").innerHTML=cats.map((c,i)=>`<div class="cat-item"><div class="cat-row" data-cid="${esc(c.id)}"><i class="sw" style="background:${c.color};margin:0"></i><input type="text" id="cN${i}" value="${esc(c.name)}" aria-label="Nombre de la categoría" maxlength="40"><input class="num" type="number" id="cC${i}" inputmode="decimal" step="1" min="0" value="${+c.cap||0}" aria-label="Tope mensual"><button class="x" type="button" data-rmcat="${i}">Borrar</button></div>
   <div class="cat-fx"><label>Al gastar<span class="sel"><select id="cS${i}">${charOpts(c.onSpend||"auto",true)}</select><button class="pv" type="button" data-pv="S${i}" aria-label="Ver">▶</button></span></label>
   <label>Al pasar el tope<span class="sel"><select id="cO${i}">${charOpts(c.onOver||"policia",false)}</select><button class="pv" type="button" data-pv="O${i}" aria-label="Ver">▶</button></span></label></div></div>`).join("");
+  renderCapSum();
+}
+/* Lo que se puede repartir en topes = salario del mes − ahorro del mes. */
+function capLimit(){const sal=+(S.profile&&S.profile.salary)||0,goal=+(S.profile&&S.profile.goal)||0;return sal>0?Math.max(0,Math.round((sal-goal)*100)/100):Infinity;}
+function capTotal(){return editCats.reduce((a,c,i)=>{const el=$("cC"+i);return a+Math.max(0,el?(parseFloat(el.value)||0):(+c.cap||0));},0);}
+function renderCapSum(){
+  const box=$("capSum");if(!box)return;const lim=capLimit();
+  if(!isFinite(lim)){box.innerHTML='<p class="mini-note" style="margin:0 0 12px">Pon tu salario y tu meta de ahorro en <b>Tus datos</b> para que los topes no se coman tu ahorro.</p>';return;}
+  const sal=+S.profile.salary||0,goal=+S.profile.goal||0,tot=Math.round(capTotal()*100)/100,left=Math.round((lim-tot)*100)/100,pct=lim>0?Math.min(100,tot/lim*100):100;
+  box.innerHTML=`<div class="cap-sum">
+    <div class="ins-row"><span>Salario del mes</span><b class="num">${fmt(sal)}</b></div>
+    <div class="ins-row"><span>Tu ahorro del mes</span><b class="num good-t">− ${fmt(goal)}</b></div>
+    <div class="ins-row tot"><span>Puedes repartir en topes</span><b class="num">${fmt(lim)}</b></div>
+    <div class="cap-bar" role="img" aria-label="Repartido ${fmt(tot)} de ${fmt(lim)}"><i class="${left<0?"over":""}" style="width:${pct}%"></i></div>
+    <p class="cap-msg ${left<0?"bad-t":"good-t"}">${left<0?`Te pasaste ${fmt(-left)}. Baja algún tope para respetar tu ahorro.`:left===0?`Repartiste ${fmt(tot)}: justo lo que puedes gastar.`:`Repartiste ${fmt(tot)}. Te quedan ${fmt(left)} por repartir.`}</p>
+  </div>`;
 }
 function readCats(){return editCats.map((c,i)=>({...c,name:($("cN"+i)?.value||"").trim()||"Categoría",cap:Math.max(0,parseFloat($("cC"+i)?.value)||0),onSpend:$("cS"+i)?.value||c.onSpend||"auto",onOver:$("cO"+i)?.value||c.onOver||"policia"}));}
 function renderSubs(){
@@ -1446,7 +1482,6 @@ $("fixHide").addEventListener("click",()=>{poliMark("fx|fixhide|"+ymKey(ym.y,ym.
 $("fQuick").addEventListener("click",e=>{const b=e.target.closest("[data-q]");if(!b)return;const x=(renderQuick.list||[])[+b.dataset.q];if(!x)return;
   formCat=x.cat;renderCats();$("fAmt").value=x.amt;$("fNote").value=x.note||"";$("fMethod").value=x.method;$("fErr").textContent="";});
 document.addEventListener("click",e=>{
-  if(e.target.closest("#goCut")){showTab("ajustes");setTimeout(()=>{$("sCutDay").scrollIntoView({behavior:"smooth",block:"center"});$("sCutDay").focus();},60);}
   if(e.target.closest("#impSee")){movFilter="antojo";$("mvSearch").value="";showTab("movs");render();}
 });
 $("editCatsLink").addEventListener("click",()=>{showTab("ajustes");setTimeout(()=>$("catCard").scrollIntoView({behavior:"smooth",block:"start"}),50);});
@@ -1457,10 +1492,30 @@ $("addCat").addEventListener("click",()=>{
   const i=editCats.length-1;$("cN"+i).focus();
 });
 $("recCats").addEventListener("click",()=>{editCats=readCats().map(c=>{const r=REC_FX[c.id];return r?{...c,onSpend:r[0],onOver:r[1]}:c;});renderCatEdit(editCats);toast("Recomendación puesta. Toca Guardar para aplicarla.");});
-$("saveCats").addEventListener("click",()=>{S.cats=readCats();editCats=S.cats.map(c=>({...c}));document.activeElement.blur();commit();toast("Categorías guardadas");});
+/* No dejar subir un tope si con eso se pasa de lo que se puede gastar (salario − ahorro). */
+$("catEdit").addEventListener("focusin",e=>{if(/^cC\d+$/.test(e.target.id))e.target.dataset.prev=e.target.value;});
+$("catEdit").addEventListener("input",e=>{
+  const el=e.target;if(!/^cC\d+$/.test(el.id))return;
+  const lim=capLimit();
+  if(isFinite(lim)){
+    const prev=Math.max(0,parseFloat(el.dataset.prev)||0),now=Math.max(0,parseFloat(el.value)||0),tot=capTotal();
+    if(now>prev&&tot>lim+0.004){
+      const others=Math.round((tot-now)*100),allowed=Math.max(prev,(Math.round(lim*100)-others)/100);
+      el.value=allowed;el.classList.remove("limit");void el.offsetWidth;el.classList.add("limit");
+      toast(allowed>prev?`Hasta ${fmt(allowed)}: lo demás es tu ahorro del mes`:`No puedes subir este tope: ya repartiste lo que puedes gastar. Baja otro primero.`);
+    }
+    el.dataset.prev=el.value;
+  }
+  renderCapSum();
+});
+$("saveCats").addEventListener("click",()=>{
+  const lim=capLimit(),tot=capTotal();
+  if(isFinite(lim)&&tot>lim+0.004){toast(`Tus topes pasan lo que puedes gastar por ${fmt(tot-lim)}. Baja alguno antes de guardar.`);$("capSum").scrollIntoView({behavior:"smooth",block:"center"});return;}
+  S.cats=readCats();editCats=S.cats.map(c=>({...c}));document.activeElement.blur();commit();toast("Categorías guardadas");});
 $("saveProfile").addEventListener("click",()=>{
   const n=$("sName").value.trim();if(!n){toast("Escribe tu nombre");$("sName").focus();return;}
   S.profile={...S.profile,name:n.slice(0,40),salary:parseFloat($("sSal").value)||0,goal:parseFloat($("sGoal").value)||0,start:parseFloat($("sStart").value)||0,yearGoal:parseFloat($("sYear").value)||0,ef:parseFloat($("sEF").value)||0};
+  S.q1=Math.min(31,Math.max(1,Math.round(parseFloat($("sQ1").value)||15)));S.q2=Math.min(31,Math.max(0,Math.round(parseFloat($("sQ2").value)||0)));
   
   document.activeElement.blur();commit();toast("Datos guardados");
 });
@@ -1509,7 +1564,7 @@ async function exportBackup(){
 }
 function markBackup(){S.lastBk=Date.now();commit();}
 /* Copias guardadas dentro de la app (IndexedDB, en el mismo teléfono). */
-const SNAP_KEEP=10;let snapDbP=null;
+const SNAP_KEEP=7;let snapDbP=null;
 function snapDb(){return snapDbP||(snapDbP=new Promise((res,rej)=>{if(!window.indexedDB)return rej(new Error("noidb"));const r=indexedDB.open("cadejo-copias",1);r.onupgradeneeded=()=>r.result.createObjectStore("snaps",{keyPath:"ts"});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}));}
 function snapReq(mode,fn){return snapDb().then(db=>new Promise((res,rej)=>{const t=db.transaction("snaps",mode),st=t.objectStore("snaps");let out;const r=fn(st);if(r)r.onsuccess=()=>{out=r.result;};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);}));}
 function snapList(){return snapReq("readonly",st=>st.getAll()).then(l=>(l||[]).sort((a,b)=>b.ts-a.ts));}
