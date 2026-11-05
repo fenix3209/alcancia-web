@@ -345,6 +345,12 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
 .wk i{display:block;width:72%;border-radius:6px 6px 2px 2px;background:var(--accent);opacity:.5;min-height:3px}
 .wk i.top{opacity:1;background:var(--coin)}
 .wk b{font-size:.68rem;color:var(--ink);font-weight:600}
+.snap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.snap:first-child{border-top:0}
+.snap b{display:block;font-size:.92rem}
+.snap span{font-size:.8rem;color:var(--muted)}
+.snap button{flex:none;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 12px;font:600 .8rem var(--font-body);cursor:pointer}
+.snap button.arm{background:var(--bad);border-color:var(--bad);color:#fff}
 .bk-state{font-size:.88rem;font-weight:600;margin:0 0 6px;color:var(--good)}
 .bk-state.old{color:var(--warn)}
 .sub-row select{grid-column:2/5;padding:7px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:.82rem;min-width:0;color:var(--ink)}
@@ -391,12 +397,7 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
         <p class="sub" id="fixTxt"></p>
         <button class="btn block" type="button" id="fixGo">Registrarlos ahora</button>
       </div>
-      <div class="card" id="cycleCard">
-        <h2>Quincena y tarjeta</h2>
-        <div id="qBlock"></div>
-        <div id="cBlock"></div>
-      </div>
-      <div class="card" id="antCard">
+            <div class="card" id="antCard">
         <div class="card-head"><h2>Gastos hormiga 🐜</h2><button class="link" type="button" id="antSee">Ver cuáles</button></div>
         <div id="antBody"></div>
       </div>
@@ -521,7 +522,7 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
     </div>
     <div class="card">
       <h2>Tarjeta de crédito</h2>
-        <p class="sub">Con el día de corte ves en Inicio cuánto llevas en el ciclo. El Cadejo cobrador te avisa 3 días antes del pago.</p>
+        <p class="sub">El Cadejo cobrador te avisa 3 días antes del pago y, con el día de corte, te dice cuánto gastaste en el ciclo.</p>
         <div class="grid2">
           <div class="field" style="margin:0"><label for="sCutDay">Día de corte</label><input id="sCutDay" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Ej. 15"></div>
           <div class="field" style="margin:0"><label for="sPayDay">Día de pago</label><input id="sPayDay" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Ej. 5"></div>
@@ -546,10 +547,7 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
         <div class="field"><label for="sStart">Ahorro que ya tienes</label><input id="sStart" type="number" inputmode="decimal" step="0.01"></div>
         <div class="field"><label for="sYear">Meta de ahorro total</label><input id="sYear" type="number" inputmode="decimal" step="1"></div>
       </div>
-        <div class="grid2">
-          <div class="field"><label for="sQ1">Cobras el día</label><input id="sQ1" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="15"></div>
-          <div class="field"><label for="sQ2">y el día</label><input id="sQ2" class="num" type="number" inputmode="numeric" min="1" max="31" placeholder="Último del mes"></div>
-        </div>
+
       <div class="field"><label for="sEF">Fondo de emergencia deseado</label><input id="sEF" type="number" inputmode="decimal" step="1"></div>
       <button class="btn block" type="button" id="saveProfile">Guardar datos</button>
     </div>
@@ -575,7 +573,14 @@ textarea.bk{width:100%;min-height:90px;border-radius:12px;border:1px solid var(-
       </div>
       <button class="btn ghost block" type="button" id="chargeSubs" style="margin-top:10px">Registrar los activos como gastos de este mes</button>
     </div>
-    <div class="card" id="bkCard">
+    <div class="card" id="snapCard">
+        <h2>Copias guardadas en la app</h2>
+        <p class="sub">La app guarda sola una copia de tus datos cada día que la usas, y siempre antes de restaurar un respaldo. Conserva las últimas 10. Si algo sale mal, vuelve a una de ellas con un toque.</p>
+        <div id="snapList"></div>
+        <button class="btn ghost block" type="button" id="snapNow" style="margin-top:10px">Guardar una copia ahora</button>
+        <p class="mini-note">Estas copias viven dentro de la app: si la desinstalas o pierdes el teléfono, se pierden con ella. Para eso está el respaldo de abajo.</p>
+      </div>
+      <div class="card" id="bkCard">
         <h2>Respaldo</h2>
         <p class="bk-state" id="bkState"></p>
         <p class="sub">Guarda una copia de tus datos fuera del teléfono. Haz uno cada mes y antes de cambiar de teléfono.</p>
@@ -1175,8 +1180,8 @@ function renderInsights(list){
   const pend=isCur&&!poliSeen("fx|fixhide|"+ymKey(ym.y,ym.m))?pendingFixed(ym.y,ym.m):[];
   $("fixCard").hidden=!pend.length;
   if(pend.length){const tot=pend.reduce((a,s)=>a+s.amt,0);$("fixTxt").textContent=`Tienes ${pend.length} sin anotar este mes (${fmt(tot)}): ${pend.slice(0,4).map(s=>s.name).join(", ")}${pend.length>4?"…":""}.`;}
-  // Quincena y tarjeta (siempre con la fecha de hoy)
-  const q=quincenaInfo(today), caps=S.cats.reduce((a,c)=>a+(+c.cap||0),0), half=caps/2, rest=half-q.spent;
+  // Quincena y tarjeta: la tarjeta se quitó de Inicio en la v2.5 (se deja el cálculo por si se vuelve a usar)
+  if($("cycleCard")){const q=quincenaInfo(today), caps=S.cats.reduce((a,c)=>a+(+c.cap||0),0), half=caps/2, rest=half-q.spent;
   let qh=`<p class="ins-h">Esta quincena</p>
     <div class="ins-row"><span>Gastado desde el ${dLabel(q.last)}</span><b class="num">${fmt(q.spent)}</b></div>
     <div class="ins-row"><span>Próxima quincena</span><b>${dLabel(q.next)} · ${q.left===1?"mañana":"en "+q.left+" días"}</b></div>`;
@@ -1188,7 +1193,7 @@ function renderInsights(list){
     <div class="ins-row"><span>Llevas desde el corte (${dLabel(c.lastCut)})</span><b class="num">${fmt(c.cur)}</b></div>
     <div class="ins-row"><span>Próximo corte</span><b>${dLabel(c.nextCut)} · ${daysBetween(today,c.nextCut)===1?"mañana":"en "+daysBetween(today,c.nextCut)+" días"}</b></div>
     <div class="ins-row"><span>Ciclo cerrado, a pagar${S.payDay?" antes del "+dLabel(nextPayDate(today)||c.nextCut):""}</span><b class="num">${fmt(c.closed)}</b></div>`;}
-  else $("cBlock").innerHTML=S.movs.some(x=>x.method==="tarjeta")?`<p class="ins-h">Tarjeta de crédito</p><p class="mini-note">Pon el <b>día de corte</b> de tu tarjeta en Ajustes para ver cuánto llevas en el ciclo. <button class="link" type="button" id="goCut">Ponerlo</button></p>`:"";
+  else $("cBlock").innerHTML="";}
   // Gastos hormiga del mes que estás viendo
   const ants=list.filter(isAnt), sum=ants.reduce((a,x)=>a+x.amt,0);
   if(!ants.length){$("antBody").innerHTML=`<p class="empty" style="padding:0">Ningún gasto de ${fmt0(HORMIGA)} o menos este mes. ¡Bien!</p>`;$("antSee").hidden=true;}
@@ -1316,6 +1321,7 @@ function renderExtras(){
   $("extras").innerHTML=ex.map(e=>{const a=+e.amt||0,p=+e.pct||0;return `<div class="extra"><div class="eh"><b>${esc(e.name)}</b><span class="when">${esc(monthLabel(e.month))}</span></div>${e.note?`<p>${esc(e.note)}</p>`:""}<div class="nums num"><span>Esperado: <b>${a?fmt0(a):"—"}</b></span><span>Ahorrar ${p}%: <b style="color:var(--coin)">${a?fmt0(a*p/100):"—"}</b></span></div><div class="acts"><button class="link" type="button" data-exedit="${esc(e.id)}">Editar</button><button class="link" type="button" style="color:var(--bad)" data-exdel="${esc(e.id)}">Borrar</button></div></div>`;}).join("")||'<p class="empty">No tienes ingresos extra anotados. Toca “+ Agregar”.</p>';
 }
 function renderSettings(){
+  renderSnaps();
   if(document.activeElement?.closest?.("#v-ajustes"))return;
   const p=S.profile||{};
   $("sName").value=p.name||"";$("sSal").value=p.salary??"";$("sGoal").value=p.goal??"";$("sStart").value=p.start??"";$("sYear").value=p.yearGoal??"";$("sEF").value=p.ef??"";
@@ -1323,7 +1329,7 @@ function renderSettings(){
   renderSubs();
   $("fxSw").checked=S.fx!==false;$("musicSw").checked=S.music!==false;$("warnSw").checked=S.warn80!==false;$("dndSw").checked=!!S.dnd;
   ["nPay","nIdle","nMonth"].forEach(k=>$(k+"Sw").checked=S[k]!==false);
-  $("sPayDay").value=S.payDay||"";$("sCutDay").value=S.cutDay||"";$("sQ1").value=S.q1||15;$("sQ2").value=S.q2||"";$("bkRemSw").checked=S.bkRem!==false;
+  $("sPayDay").value=S.payDay||"";$("sCutDay").value=S.cutDay||"";$("bkRemSw").checked=S.bkRem!==false;
   if(isAndroid&&AndroidBridge.schedule){$("phoneSec").hidden=false;$("notifSw").checked=S.notif!==false;$("nSubs").classList.toggle("off",S.notif===false);}
   if(isAndroid&&AndroidBridge.isLockEnabled){$("secCard").hidden=false;try{$("lockSw").checked=!!AndroidBridge.isLockEnabled();}catch(e){}}
 }
@@ -1455,7 +1461,7 @@ $("saveCats").addEventListener("click",()=>{S.cats=readCats();editCats=S.cats.ma
 $("saveProfile").addEventListener("click",()=>{
   const n=$("sName").value.trim();if(!n){toast("Escribe tu nombre");$("sName").focus();return;}
   S.profile={...S.profile,name:n.slice(0,40),salary:parseFloat($("sSal").value)||0,goal:parseFloat($("sGoal").value)||0,start:parseFloat($("sStart").value)||0,yearGoal:parseFloat($("sYear").value)||0,ef:parseFloat($("sEF").value)||0};
-  S.q1=Math.min(31,Math.max(1,Math.round(parseFloat($("sQ1").value)||15)));S.q2=Math.min(31,Math.max(0,Math.round(parseFloat($("sQ2").value)||0)));
+  
   document.activeElement.blur();commit();toast("Datos guardados");
 });
 $("addSub").addEventListener("click",()=>{S.subs=readSubs();S.subs.push({name:"",amt:0,on:true,cat:"subs"});renderSubs();$("sNm"+(S.subs.length-1)).focus();});
@@ -1502,6 +1508,46 @@ async function exportBackup(){
   try{return {txt:await makeBackup(pass),enc:!!pass};}catch(e){toast("Este teléfono no pudo cifrar el respaldo");return null;}
 }
 function markBackup(){S.lastBk=Date.now();commit();}
+/* Copias guardadas dentro de la app (IndexedDB, en el mismo teléfono). */
+const SNAP_KEEP=10;let snapDbP=null;
+function snapDb(){return snapDbP||(snapDbP=new Promise((res,rej)=>{if(!window.indexedDB)return rej(new Error("noidb"));const r=indexedDB.open("cadejo-copias",1);r.onupgradeneeded=()=>r.result.createObjectStore("snaps",{keyPath:"ts"});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}));}
+function snapReq(mode,fn){return snapDb().then(db=>new Promise((res,rej)=>{const t=db.transaction("snaps",mode),st=t.objectStore("snaps");let out;const r=fn(st);if(r)r.onsuccess=()=>{out=r.result;};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);}));}
+function snapList(){return snapReq("readonly",st=>st.getAll()).then(l=>(l||[]).sort((a,b)=>b.ts-a.ts));}
+async function snapSave(reason){
+  try{
+    if(!S.movs.length&&!(S.profile&&S.profile.name))return false;
+    const g=S.movs.filter(x=>x.type==="gasto").length;
+    await snapReq("readwrite",st=>st.put({ts:Date.now(),reason,n:S.movs.length,g,name:(S.profile&&S.profile.name)||"",data:backupText()}));
+    const l=await snapList();
+    for(const old of l.slice(SNAP_KEEP))await snapReq("readwrite",st=>st.delete(old.ts));
+    renderSnaps();return true;
+  }catch(e){return false;}
+}
+async function snapAuto(){try{const l=await snapList();if(!l.length||Date.now()-l[0].ts>20*36e5)await snapSave("Automática");}catch(e){}}
+function snapWhen(ts){const d=new Date(ts),t=new Date(),y=new Date(t.getTime()-864e5);const day=d.toDateString()===t.toDateString()?"Hoy":d.toDateString()===y.toDateString()?"Ayer":`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}`;
+  let h=d.getHours(),m=String(d.getMinutes()).padStart(2,"0");const ap=h<12?"a. m.":"p. m.";h=h%12||12;return `${day}, ${h}:${m} ${ap}`;}
+async function renderSnaps(){
+  const box=$("snapList");if(!box)return;
+  let l=[];try{l=await snapList();}catch(e){box.innerHTML='<p class="empty" style="padding:0">Este teléfono no permite guardar copias dentro de la app.</p>';$("snapNow").hidden=true;return;}
+  const all=renderSnaps.all;
+  box.innerHTML=l.length?l.map((x,i)=>`<div class="snap"${!all&&i>=3?" hidden":""}><div><b>${snapWhen(x.ts)}</b><span>${esc(x.reason)} · ${x.n} movimiento${x.n===1?"":"s"}</span></div><button type="button" data-snap="${x.ts}">Volver a esta</button></div>`).join("")
+    :'<p class="empty" style="padding:0">Todavía no hay copias. La primera se guarda hoy.</p>';
+  if(l.length>3&&!all)box.insertAdjacentHTML("beforeend",`<button class="link" type="button" id="snapMore" style="margin-top:6px">Ver las ${l.length} copias</button>`);
+}
+$("snapList").addEventListener("click",async e=>{
+  if(e.target.closest("#snapMore")){renderSnaps.all=true;renderSnaps();return;}
+  const b=e.target.closest("[data-snap]");if(!b)return;
+  if(!b.classList.contains("arm")){document.querySelectorAll("#snapList .arm").forEach(x=>{x.classList.remove("arm");x.textContent="Volver a esta";});b.classList.add("arm");b.textContent="¿Seguro? Toca otra vez";return;}
+  try{
+    const ts=+b.dataset.snap, rec=(await snapList()).find(x=>x.ts===ts);if(!rec)throw 0;
+    const p=JSON.parse(rec.data);if(!p||!Array.isArray(p.movs))throw 0;
+    await snapSave("Antes de volver a una copia");
+    S=normalize(p);commit();applyTheme();toast(`Listo: volviste a la copia de ${snapWhen(ts).toLowerCase()}`);renderSnaps();
+  }catch(err){toast("No se pudo abrir esa copia");renderSnaps();}
+});
+$("snapNow").addEventListener("click",async()=>{toast(await snapSave("Guardada a mano")?"Copia guardada en la app":"No hay datos para guardar todavía");});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)snapAuto();});
+setTimeout(()=>{snapAuto().then(renderSnaps);},2500);
 function goBackup(){showTab("ajustes");setTimeout(()=>{$("bkCard").scrollIntoView({behavior:"smooth",block:"start"});},60);}
 $("copyBk").addEventListener("click",async()=>{
   const r=await exportBackup();if(!r)return;const txt=r.txt;
@@ -1540,7 +1586,7 @@ $("showImport").addEventListener("click",()=>{$("importBox").hidden=!$("importBo
 async function doImport(txt,pass){try{if(!txt||txt.length>5e6)throw 0;let p;
   try{p=await openBackup(String(txt).trim(),pass);}
   catch(e){const m=e&&e.message;if(m==="needpass"){toast("Este respaldo tiene contraseña. Escríbela primero.");return false;}if(m==="badpass"){toast("La contraseña no es correcta");return false;}if(m==="nocrypto"){toast("Este teléfono no puede abrir respaldos cifrados");return false;}throw e;}
-  if(!p||!Array.isArray(p.movs))throw 0;S=normalize(p);commit();applyTheme();toast("Respaldo restaurado");checkOnboarding();return true;}catch(e){toast("Ese texto no es un respaldo válido de Cerdito Cadejo");return false;}}
+  if(!p||!Array.isArray(p.movs))throw 0;await snapSave("Antes de restaurar un respaldo");S=normalize(p);commit();applyTheme();toast("Respaldo restaurado");checkOnboarding();return true;}catch(e){toast("Ese texto no es un respaldo válido de Cerdito Cadejo");return false;}}
 $("doImport").addEventListener("click",async()=>{if(await doImport($("importTxt").value,$("bkPass").value))$("importBox").hidden=true;});
 $("onbRestore").addEventListener("click",()=>{$("onbImport").hidden=!$("onbImport").hidden;});
 $("onbDoImport").addEventListener("click",()=>doImport($("onbImportTxt").value,$("onbBkPass").value));
