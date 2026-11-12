@@ -586,7 +586,7 @@ details.sec[open]>summary{margin-bottom:12px}
       <span class="small">Si te escriben de varios números, sepáralos con comas.</span>
       <button class="btn block" type="button" id="smsSave" style="margin-top:10px">Guardar</button>
       <div id="smsAuto" hidden>
-        <div class="nrow" style="margin-top:12px"><div><b>Leer los mensajes del banco</b><span>Solo los de ese número. Los demás mensajes no se leen ni se guardan.</span></div><label class="switch"><input type="checkbox" id="smsSw" aria-label="Leer los mensajes del banco"><span></span></label></div>
+        <div class="nrow" style="margin-top:12px"><div><b>Leer el aviso del banco</b><span>Solo los de ese número. Los demás avisos no se leen ni se guardan.</span></div><label class="switch"><input type="checkbox" id="smsSw" aria-label="Leer el aviso del banco"><span></span></label></div>
         <p class="mini-note" id="smsState"></p>
         <button class="btn ghost block" type="button" id="smsImport" hidden style="margin-top:10px">Traer las compras de los últimos 30 días</button>
       </div>
@@ -1646,12 +1646,12 @@ function smsInfo(){try{return smsNative()?JSON.parse(AndroidBridge.smsState()):n
 function renderSms(){
   if(document.activeElement!==$("smsSender"))$("smsSender").value=S.sms.sender;if(document.activeElement!==$("smsLabel"))$("smsLabel").value=S.sms.label;
   const a=smsInfo();$("smsAuto").hidden=!a;if(!a)return;
-  const on=!!(a.on&&S.sms.on);$("smsSw").checked=on;$("smsImport").hidden=!on;
-  $("smsState").textContent=on?`Activo: las compras${S.sms.label?" de "+S.sms.label:""} aparecerán en Inicio para confirmar.`:"Al activarlo, Android te pedirá permiso para leer mensajes. La app no tiene acceso a internet: nada sale de tu teléfono.";
+  const on=!!(a.on&&S.sms.on);$("smsSw").checked=on;$("smsImport").hidden=true;
+  $("smsState").textContent=on?`Activo: las compras${S.sms.label?" de "+S.sms.label:""} aparecerán en Inicio para confirmar.`:"Al activarlo, Android abrirá el acceso a notificaciones: busca «Mis gastos» y enciéndelo. La app no tiene acceso a internet: nada sale de tu teléfono.";
 }
 function smsPull(){if(!smsNative()||!S.sms.on)return;try{const r=ingestSms(JSON.parse(AndroidBridge.smsDrain()));if(r.added)toast(`${r.added} compra${r.added===1?"":"s"} por confirmar`);}catch(e){}}
 window.onSmsWake=()=>smsPull();
-window.onSmsState=r=>{S.sms.on=!!(r&&r.on);commit();renderSms();toast(S.sms.on?"Listo: leeré los mensajes de ese número":"No se activó: falta el permiso de mensajes. Si Android no te lo ofrece, actívalo en los ajustes de la app.");};
+window.onSmsState=r=>{S.sms.on=!!(r&&r.on);commit();renderSms();toast(S.sms.on?"Listo: leeré los avisos de ese número":"No se activó: falta el acceso a notificaciones. En Ajustes de Android → Acceso a notificaciones, enciende «Mis gastos».");};
 window.onSmsImport=l=>{const r=ingestSms(l);toast(r.added?`${r.added} compra${r.added===1?"":"s"} por confirmar`:"No encontré compras nuevas en esos mensajes");if(r.added)showTab("inicio");};
 $("smsSave").addEventListener("click",()=>{S.sms.sender=$("smsSender").value.replace(/[^0-9A-Za-z+,\- ]/g,"").trim().slice(0,120);S.sms.label=$("smsLabel").value.trim().slice(0,40);document.activeElement.blur();
   if(S.sms.on&&smsNative()){if(S.sms.sender)AndroidBridge.smsEnable(S.sms.sender);else{AndroidBridge.smsDisable();S.sms.on=false;}}
