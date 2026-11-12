@@ -234,8 +234,6 @@ if(copyBk){
                 + '<button class="btn ghost" type="button" id="loadBkFile">Abrir archivo</button>'
                 + '<input type="file" id="bkFileIn" accept=".json,.txt,application/json,text/plain" hidden>';
   fresh.parentElement.after(row);
-  const p = fresh.closest(".card").querySelector(".sub");
-  if(p) p.textContent = "Tus datos solo están en este teléfono. Guarda un respaldo cada mes (por ejemplo en Archivos o iCloud Drive) y antes de cambiar de teléfono.";
   document.getElementById("saveBkFile").addEventListener("click", async () => {
     const d = new Date(), name = `cerdito-cadejo-respaldo-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
     const r = await exportBackup(); if(!r) return;
